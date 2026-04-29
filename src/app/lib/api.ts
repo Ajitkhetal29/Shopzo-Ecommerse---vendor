@@ -29,6 +29,7 @@ export const API_ENDPOINTS = {
     INVENTORY_LIST: `${API_BASE_URL}/inventory/list`,
     CREATE_INVENTORY: `${API_BASE_URL}/inventory/create`,
     UPDATE_INVENTORY: `${API_BASE_URL}/inventory/update`,
+    ADJUST_INVENTORY: `${API_BASE_URL}/inventory/adjust`,
     DELETE_INVENTORY: `${API_BASE_URL}/inventory/delete`,
 
 
@@ -43,4 +44,6 @@ export const API_ENDPOINTS = {
     GET_INVENTORY_TRANSFER_STATUS_RULES: `${API_BASE_URL}/inventoryTransfer/status-rules`,
     UPDATE_INVENTORY_TRANSFER_STATUS: `${API_BASE_URL}/inventoryTransfer/status`,
     GET_TRANSFER_ISSUES: `${API_BASE_URL}/inventoryTransfer/issues`,
+    GET_TRANSFER_ISSUE_RESOLUTION_RULES: `${API_BASE_URL}/inventoryTransfer/issue-resolution-rules`,
+    UPDATE_TRANSFER_ISSUE_STATUS: `${API_BASE_URL}/inventoryTransfer/issues/status`,
 };
