@@ -85,31 +85,36 @@ export default function ProductsPage() {
 
   if (loading && products.length === 0) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-slate-900">
-        <div className="text-lg text-gray-600 dark:text-gray-400">Loading...</div>
+      <div className="flex items-center justify-center rounded-2xl border border-slate-200/80 bg-white py-16 dark:border-slate-700/70 dark:bg-slate-900/90">
+        <div className="text-center">
+          <div className="mx-auto mb-3 h-7 w-7 animate-spin rounded-full border-2 border-amber-600 border-t-transparent" />
+          <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Loading products…</p>
+        </div>
       </div>
     );
   }
 
   if (error && products.length === 0) {
     return (
-      <div className="p-4 bg-gray-50 dark:bg-slate-900 min-h-screen">
-        <div className="bg-red-100 dark:bg-red-900/20 border border-red-400 text-red-700 px-4 py-3 rounded">{error}</div>
+      <div
+        className="rounded-2xl border border-red-200/80 bg-red-50/90 px-4 py-3 text-sm text-red-800 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-200"
+        role="alert"
+      >
+        {error}
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="space-y-6">
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">Products</h1>
-            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">Manage your products</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-3xl">Products</h1>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Manage your catalog</p>
           </div>
           <Link
             href="/products/add"
-            className="inline-flex items-center justify-center px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg font-medium hover:bg-gray-800 dark:hover:bg-gray-200"
+            className="inline-flex items-center justify-center rounded-xl bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-700"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -125,7 +130,7 @@ export default function ProductsPage() {
               setCategoryId(e.target.value);
               setPagination((p) => ({ ...p, page: 1 }));
             }}
-            className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-sm"
+            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
           >
             <option value="">All categories</option>
             {categories.map((c) => (
@@ -138,7 +143,7 @@ export default function ProductsPage() {
               setSubcategoryId(e.target.value);
               setPagination((p) => ({ ...p, page: 1 }));
             }}
-            className="px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-sm"
+            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
             disabled={!categoryId}
           >
             <option value="">All subcategories</option>
@@ -149,10 +154,10 @@ export default function ProductsPage() {
         </div>
 
         {products.length === 0 ? (
-          <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-12 text-center">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-white">No products</h3>
-            <p className="mt-1 text-sm text-gray-500">Get started by adding a product.</p>
-            <Link href="/products/add" className="mt-6 inline-flex px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg font-medium">
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-12 text-center shadow-sm dark:border-slate-700/70 dark:bg-slate-900/90">
+            <h3 className="text-sm font-medium text-slate-900 dark:text-white">No products</h3>
+            <p className="mt-1 text-sm text-slate-500">Get started by adding a product.</p>
+            <Link href="/products/add" className="mt-6 inline-flex rounded-xl bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700">
               Add Product
             </Link>
           </div>
@@ -164,7 +169,7 @@ export default function ProductsPage() {
                   key={p._id}
                   type="button"
                   onClick={() => router.push(`/products/${p._id}`)}
-                  className="group text-left bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-all"
+                  className="group overflow-hidden rounded-xl border border-slate-200/80 bg-white text-left shadow-sm transition-all hover:border-amber-500/35 hover:shadow-md dark:border-slate-700/70 dark:bg-slate-900/90"
                 >
                   <div className="aspect-square bg-gray-100 dark:bg-slate-700 relative overflow-hidden">
                     {p.images?.[0]?.url ? (
@@ -206,7 +211,6 @@ export default function ProductsPage() {
             )}
           </>
         )}
-      </div>
     </div>
   );
 }

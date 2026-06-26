@@ -102,14 +102,14 @@ export default function AddProductPage() {
 
   if (!vendor?._id) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex items-center justify-center">
+      <div className="flex items-center justify-center rounded-2xl border border-slate-200/80 bg-white py-16 dark:border-slate-700/70 dark:bg-slate-900/90">
         <p className="text-gray-500">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="space-y-6">
       <div className="max-w-3xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">Add Product</h1>

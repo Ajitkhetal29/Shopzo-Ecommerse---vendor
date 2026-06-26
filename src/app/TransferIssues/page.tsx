@@ -216,7 +216,7 @@ const TransferIssuesPage = () => {
     resolutionTypeInput || selectedIssue?.issueResolutionType || allowedResolutionTypes[0] || "";
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="space-y-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
           <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">Transfer Issues</h1>

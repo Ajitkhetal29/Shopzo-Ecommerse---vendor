@@ -90,14 +90,14 @@ const TransferInventoryPage = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-slate-900">
+            <div className="flex items-center justify-center rounded-2xl border border-slate-200/80 bg-white py-16 dark:border-slate-700/70 dark:bg-slate-900/90">
                 <div className="text-lg text-gray-600 dark:text-gray-400">Loading transfer requests...</div>
             </div>
         );
     }
     if (error) {
         return (
-            <div className="p-4 bg-gray-50 dark:bg-slate-900 min-h-screen">
+            <div className="space-y-6">
                 <div className="max-w-7xl mx-auto bg-red-100 dark:bg-red-900/20 border border-red-400 text-red-700 dark:text-red-300 px-4 py-3 rounded">
                     Error: {error}
                 </div>
@@ -106,7 +106,7 @@ const TransferInventoryPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-slate-900 py-8 px-4 sm:px-6 lg:px-8 transition-colors">
+        <div className="space-y-6">
             <div className="max-w-7xl mx-auto">
                 <div className="mb-6">
                     <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">Transfer Inventory</h1>
