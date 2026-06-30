@@ -1,15 +1,28 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 import { API_ENDPOINTS } from "@/app/lib/api";
+import { AuthThemeToggle } from "@/app/components/ThemeToggle";
+import { publicUrl } from "@/lib/basePath";
 import { RootState } from "@/store";
 import { setVendor } from "@/store/slices/authSlice";
-import ThemeToggleButton from "@/app/components/ThemeToggleButton";
-import { publicUrl } from "@/lib/basePath";
+
+const benefits = [
+  "Manage your product catalog",
+  "Track stock across warehouses",
+  "Handle transfer requests",
+];
+
+const modules = [
+  { name: "Catalog", value: "Products & variants", tone: "bg-emerald-500" },
+  { name: "Inventory", value: "Stock levels", tone: "bg-cyan-500" },
+  { name: "Transfers", value: "Inbound & outbound", tone: "bg-amber-500" },
+];
 
 const LoginPage = () => {
   const router = useRouter();
@@ -56,163 +69,198 @@ const LoginPage = () => {
     }
   };
 
+  const inputClass =
+    "h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-[15px] text-slate-950 outline-none transition focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/10 dark:border-zinc-700 dark:bg-zinc-950 dark:text-white dark:focus:border-emerald-400 dark:focus:ring-emerald-400/10";
+
   return (
-    <div className="relative min-h-dvh overflow-x-hidden bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
-      <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_58%_40%_at_20%_15%,rgba(245,158,11,0.12),transparent),radial-gradient(ellipse_42%_34%_at_85%_90%,rgba(14,165,233,0.08),transparent)] dark:bg-[radial-gradient(ellipse_58%_40%_at_20%_15%,rgba(245,158,11,0.1),transparent),radial-gradient(ellipse_42%_34%_at_85%_90%,rgba(14,165,233,0.06),transparent)]"
-        aria-hidden
-      />
+    <main className="min-h-dvh bg-[#f5f7fb] text-slate-950 dark:bg-zinc-950 dark:text-white">
+      <AuthThemeToggle />
+      <div className="grid min-h-dvh lg:grid-cols-[minmax(0,0.95fr)_minmax(520px,1.05fr)]">
+        <section className="relative hidden overflow-hidden bg-slate-950 text-white lg:block">
+          <div className="absolute inset-0 vendor-login-backdrop" aria-hidden />
+          <div className="relative flex h-full min-h-[720px] flex-col justify-between px-10 py-8 xl:px-14">
+            <Link href="/login" className="inline-flex w-fit rounded-lg bg-white px-3 py-2 shadow-sm">
+              <Image src={publicUrl("/shopzo_logo.png")} alt="Shopzo" width={118} height={44} priority />
+            </Link>
 
-      <ThemeToggleButton
-        className={[
-          "fixed right-4 top-4 z-20 rounded-full border p-2.5 shadow-sm backdrop-blur-sm",
-          "border-slate-200/90 bg-white/95 text-slate-600 hover:bg-slate-50",
-          "dark:border-slate-700/80 dark:bg-slate-900/95 dark:text-amber-200/90 dark:hover:bg-slate-800/95",
-        ].join(" ")}
-      />
+            <div className="max-w-xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300">Seller portal</p>
+              <h1 className="mt-4 text-5xl font-semibold leading-[1.03] tracking-normal xl:text-6xl">
+                Sell smarter from your vendor workspace.
+              </h1>
+              <p className="mt-5 max-w-lg text-base leading-7 text-slate-300">
+                Manage products, stock levels, and inventory transfers — aligned with the Shopzo buyer experience.
+              </p>
 
-      <div className="relative z-[1] grid min-h-dvh grid-cols-1 lg:grid-cols-[1.08fr_0.92fr]">
-        <section className="relative hidden border-r border-slate-200/80 bg-white/70 p-12 backdrop-blur lg:flex lg:flex-col lg:justify-between dark:border-slate-800/80 dark:bg-slate-900/50">
-          <div className="max-w-lg">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-300">Shopzo Vendor</p>
-            <h1 className="mt-4 text-5xl font-semibold leading-[1.05] tracking-tight text-slate-900 dark:text-white">
-              Sell smarter
-              <span className="mt-3 block text-2xl font-medium text-slate-500 dark:text-slate-300">
-                with your vendor workspace
-              </span>
-            </h1>
-            <p className="mt-6 max-w-md text-base leading-relaxed text-slate-600 dark:text-slate-400">
-              Manage products, stock levels, and inventory transfers from one clean seller dashboard.
-            </p>
-          </div>
+              <div className="mt-9 grid grid-cols-3 gap-3">
+                {modules.map((item) => (
+                  <div
+                    key={item.name}
+                    className="rounded-lg border border-white/10 bg-white/[0.06] p-4 backdrop-blur"
+                  >
+                    <span className={`block h-2 w-10 rounded-full ${item.tone}`} />
+                    <p className="mt-4 text-sm font-semibold text-white">{item.name}</p>
+                    <p className="mt-1 text-xs text-slate-400">{item.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-          <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-6 shadow-sm dark:border-slate-700/70 dark:bg-slate-900/80">
-            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Seller Console</p>
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-              Catalog, inventory, and fulfillment tools built for vendor partners.
-            </p>
+            <div className="grid grid-cols-3 gap-4 border-t border-white/10 pt-6">
+              <Metric value="Live" label="catalog sync" />
+              <Metric value="24/7" label="seller access" />
+              <Metric value="Fast" label="fulfillment" />
+            </div>
           </div>
         </section>
 
-        <section className="flex items-center justify-center px-4 py-8 sm:px-6 lg:px-10 lg:py-10">
-          <div className="w-full max-w-[430px] rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm sm:p-7 dark:border-slate-700/80 dark:bg-slate-900/95">
-            <div className="mb-6 flex justify-center">
-              <div className="relative h-14 w-[10.5rem] overflow-hidden sm:h-16 sm:w-[12rem]">
-                <Image
-                  src={publicUrl("/shopzo_logo.png")}
-                  alt="Shopzo"
-                  fill
-                  sizes="(max-width: 640px) 168px, 192px"
-                  className="object-contain object-center scale-[1.55] dark:hidden"
-                  priority
-                />
-                <Image
-                  src={publicUrl("/shopzo_logo_tp.png")}
-                  alt=""
-                  fill
-                  sizes="(max-width: 640px) 168px, 192px"
-                  className="hidden object-contain object-center scale-[1.55] dark:block"
-                  priority
-                  aria-hidden
-                />
-              </div>
-            </div>
+        <section className="flex min-h-dvh items-center justify-center px-5 py-10 sm:px-8 lg:px-12">
+          <div className="w-full max-w-[460px]">
+            <Link
+              href="/login"
+              className="mb-8 inline-flex rounded-lg bg-white px-3 py-2 shadow-sm ring-1 ring-slate-200 lg:hidden"
+            >
+              <Image src={publicUrl("/shopzo_logo.png")} alt="Shopzo" width={112} height={42} priority />
+            </Link>
 
-            <div className="mb-6">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-                Welcome back
-              </p>
-              <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">Sign in</h2>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Vendor email and password</p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xl shadow-slate-950/5 dark:border-white/10 dark:bg-zinc-900 sm:p-7">
               <div>
-                <label htmlFor="login-email" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">
-                  Email
-                </label>
-                <input
-                  id="login-email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-[0.95rem] text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-amber-500/60 focus:ring-2 focus:ring-amber-500/25 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-amber-500/50 dark:focus:ring-amber-500/20"
-                  placeholder="you@vendor.com"
-                />
+                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-emerald-700 dark:text-emerald-300">
+                  Vendor access
+                </p>
+                <h2 className="mt-3 text-3xl font-semibold tracking-normal text-slate-950 dark:text-white">
+                  Sign in to Shopzo
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-zinc-400">
+                  Vendor email and password
+                </p>
               </div>
 
-              <div>
-                <label htmlFor="login-password" className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">
-                  Password
-                </label>
-                <div className="relative">
-                  <input
-                    id="login-password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="current-password"
-                    required
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="h-11 w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-4 pr-12 text-[0.95rem] text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-amber-500/60 focus:ring-2 focus:ring-amber-500/25 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-amber-500/50 dark:focus:ring-amber-500/20"
-                    placeholder="••••••••"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+              <form onSubmit={handleSubmit} className="mt-7 space-y-4" noValidate>
+                <div>
+                  <label
+                    htmlFor="login-email"
+                    className="mb-1.5 block text-sm font-semibold text-slate-800 dark:text-zinc-200"
                   >
-                    {showPassword ? <EyeOffIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
-                  </button>
+                    Email address
+                  </label>
+                  <input
+                    id="login-email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="you@vendor.com"
+                    className={inputClass}
+                  />
                 </div>
-              </div>
 
-              {error ? (
-                <div
-                  className="rounded-xl border border-red-200/80 bg-red-50/90 px-4 py-3 text-sm text-red-800 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-200"
-                  role="alert"
+                <div>
+                  <label
+                    htmlFor="login-password"
+                    className="mb-1.5 block text-sm font-semibold text-slate-800 dark:text-zinc-200"
+                  >
+                    Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="login-password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete="current-password"
+                      required
+                      value={formData.password}
+                      onChange={handleChange}
+                      placeholder="Enter your password"
+                      className={`${inputClass} pr-12`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((value) => !value)}
+                      className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                    </button>
+                  </div>
+                </div>
+
+                {error ? (
+                  <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-200">
+                    {error}
+                  </div>
+                ) : null}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="h-12 w-full rounded-xl bg-slate-950 px-4 text-[15px] font-semibold text-white shadow-lg shadow-slate-950/10 transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200"
                 >
-                  {error}
-                </div>
-              ) : null}
+                  {loading ? "Signing in..." : "Sign in"}
+                </button>
+              </form>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="h-11 w-full rounded-xl bg-amber-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:ring-offset-2 focus:ring-offset-slate-100 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-slate-900"
-              >
-                {loading ? "Signing in…" : "Sign in"}
-              </button>
-            </form>
+              <div className="mt-6 grid gap-2">
+                {benefits.map((benefit) => (
+                  <div
+                    key={benefit}
+                    className="flex items-center gap-3 rounded-xl bg-slate-50 px-3 py-2.5 text-sm font-medium text-slate-700 dark:bg-zinc-950 dark:text-zinc-300"
+                  >
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-400/15 dark:text-emerald-300">
+                      <CheckIcon />
+                    </span>
+                    {benefit}
+                  </div>
+                ))}
+              </div>
+            </div>
 
-            <p className="mt-5 text-center text-xs text-slate-500 dark:text-slate-400">Authorized vendor access only.</p>
+            <p className="mt-6 text-center text-sm text-slate-600 dark:text-zinc-400">
+              Authorized vendor access only.
+            </p>
           </div>
         </section>
       </div>
-    </div>
+    </main>
   );
 };
 
-function EyeIcon({ className }: { className?: string }) {
+function Metric({ value, label }: { value: string; label: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+    <div>
+      <p className="text-2xl font-semibold text-white">{value}</p>
+      <p className="mt-1 text-xs leading-5 text-slate-400">{label}</p>
+    </div>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="m5 13 4 4L19 7" />
     </svg>
   );
 }
 
-function EyeOffIcon({ className }: { className?: string }) {
+function EyeIcon() {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M2.5 12C3.7 8 7.5 5 12 5s8.3 3 9.5 7c-1.2 4-5 7-9.5 7s-8.3-3-9.5-7Z" />
+    </svg>
+  );
+}
+
+function EyeOffIcon() {
+  return (
+    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
-        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+        strokeWidth={1.75}
+        d="m3 3 18 18M10.6 10.6A3 3 0 0 0 13.4 13.4M9.9 5.2A10.7 10.7 0 0 1 12 5c4.5 0 8.3 3 9.5 7a11.8 11.8 0 0 1-2.4 4M6.3 6.8A11.5 11.5 0 0 0 2.5 12c1.2 4 5 7 9.5 7 1.1 0 2.1-.2 3.1-.5"
       />
     </svg>
   );

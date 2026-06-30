@@ -70,10 +70,10 @@ export default function AppChrome({ children }: { children: React.ReactNode }) {
 
   if (isVerifying || !vendor) {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-slate-100 dark:bg-slate-950">
+      <div className="flex min-h-dvh items-center justify-center bg-shop-surface">
         <div className="text-center">
-          <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-amber-600 border-t-transparent" />
-          <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Loading workspace…</p>
+          <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-shop-accent border-t-transparent" />
+          <p className="text-sm font-medium text-shop-muted">Loading workspace…</p>
         </div>
       </div>
     );
