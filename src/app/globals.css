@@ -7,14 +7,16 @@
 @variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #fafaf8;
-  --foreground: #171717;
-  --shop-surface: #fafaf8;
+  --background: #f6f7fb;
+  --foreground: #0b1220;
+  --shop-surface: #f6f7fb;
   --shop-surface-raised: #ffffff;
-  --shop-muted: #737373;
-  --shop-border: #e5e5e5;
+  --shop-muted: #6b7280;
+  --shop-border: #e6e8ef;
   --shop-accent: #059669;
   --shop-accent-hover: #047857;
+  --shop-shadow: 0 4px 24px rgb(15 23 42 / 0.06);
+  --shop-shadow-lg: 0 18px 50px rgb(15 23 42 / 0.08);
 }
 
 @theme inline {
@@ -26,25 +28,136 @@
   --color-shop-border: var(--shop-border);
   --color-shop-accent: var(--shop-accent);
   --color-shop-accent-hover: var(--shop-accent-hover);
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, monospace;
 }
 
 html.dark {
-  --background: #0a0a0a;
-  --foreground: #fafafa;
-  --shop-surface: #0a0a0a;
-  --shop-surface-raised: #141414;
-  --shop-muted: #a3a3a3;
-  --shop-border: #262626;
+  --background: #07090f;
+  --foreground: #f8fafc;
+  --shop-surface: #07090f;
+  --shop-surface-raised: #11141d;
+  --shop-muted: #94a3b8;
+  --shop-border: #1f2430;
   --shop-accent: #34d399;
   --shop-accent-hover: #6ee7b7;
+  --shop-shadow: 0 4px 24px rgb(0 0 0 / 0.35);
+  --shop-shadow-lg: 0 18px 50px rgb(0 0 0 / 0.45);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+}
+
+/* Soft premium atmosphere (ported from buyer, emerald-tinted) */
+.shopzo-premium-bg {
+  background:
+    radial-gradient(ellipse 70% 55% at 8% 0%, rgb(186 210 255 / 0.55), transparent 58%),
+    radial-gradient(ellipse 60% 50% at 96% 4%, rgb(209 250 229 / 0.45), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 50% 100%, rgb(232 214 255 / 0.25), transparent 60%),
+    linear-gradient(180deg, #f8f9fd 0%, #f6f7fb 45%, #ffffff 100%);
+}
+
+.dark .shopzo-premium-bg {
+  background:
+    radial-gradient(ellipse 70% 55% at 8% 0%, rgb(59 130 246 / 0.16), transparent 58%),
+    radial-gradient(ellipse 60% 50% at 96% 4%, rgb(16 185 129 / 0.12), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 50% 100%, rgb(167 139 250 / 0.08), transparent 60%),
+    linear-gradient(180deg, #07090f 0%, #0a0d14 100%);
+}
+
+.shopzo-float-nav {
+  border: 1px solid rgb(255 255 255 / 0.7);
+  background: rgb(255 255 255 / 0.78);
+  box-shadow:
+    0 8px 32px rgb(15 23 42 / 0.07),
+    0 1px 0 rgb(255 255 255 / 0.8) inset;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.dark .shopzo-float-nav {
+  border-color: rgb(255 255 255 / 0.08);
+  background: rgb(17 20 29 / 0.78);
+  box-shadow:
+    0 10px 36px rgb(0 0 0 / 0.4),
+    0 1px 0 rgb(255 255 255 / 0.05) inset;
+}
+
+.shopzo-soft-card {
+  border: 1px solid rgb(255 255 255 / 0.8);
+  background: rgb(255 255 255 / 0.86);
+  box-shadow: var(--shop-shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.dark .shopzo-soft-card {
+  border-color: rgb(255 255 255 / 0.06);
+  background: rgb(17 20 29 / 0.88);
+}
+
+.shopzo-pill-btn {
+  border-radius: 9999px;
+  transition:
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s ease,
+    background-color 0.2s ease;
+}
+
+.shopzo-pill-btn:hover {
+  transform: translateY(-1px);
+}
+
+.shopzo-pill-btn:active {
+  transform: translateY(0);
+}
+
+@keyframes premium-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.premium-rise {
+  opacity: 0;
+  animation: premium-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--pr-delay, 0ms);
+}
+
+@keyframes premium-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.premium-fade {
+  opacity: 0;
+  animation: premium-fade 0.9s ease forwards;
+  animation-delay: var(--pf-delay, 0ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .premium-rise,
+  .premium-fade {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .shopzo-pill-btn:hover {
+    transform: none;
+  }
 }
 
 .vendor-login-backdrop {
@@ -71,7 +184,7 @@ body {
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
-  -webkit-text-fill-color: #171717;
+  -webkit-text-fill-color: #0b1220;
   -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
   transition: background-color 5000s ease-in-out 0s;
 }
@@ -79,6 +192,6 @@ input:-webkit-autofill:focus {
 .dark input:-webkit-autofill,
 .dark input:-webkit-autofill:hover,
 .dark input:-webkit-autofill:focus {
-  -webkit-text-fill-color: #fafafa;
-  -webkit-box-shadow: 0 0 0 1000px #141414 inset;
+  -webkit-text-fill-color: #f8fafc;
+  -webkit-box-shadow: 0 0 0 1000px #11141d inset;
 }

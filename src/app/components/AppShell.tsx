@@ -156,9 +156,9 @@ export default function AppShell({ children, menuItems, vendor, brandHref, onLog
       </aside>
 
       <div
-        className={`flex min-w-0 flex-1 flex-col transition-[margin] duration-200 ease-out ${collapsed ? "lg:ml-[4.75rem]" : "lg:ml-72"}`}
+        className={`flex min-w-0 flex-1 flex-col shopzo-premium-bg transition-[margin] duration-200 ease-out ${collapsed ? "lg:ml-[4.75rem]" : "lg:ml-72"}`}
       >
-        <header className="sticky top-0 z-20 flex min-h-16 shrink-0 items-center gap-2 border-b border-shop-border bg-shop-surface-raised/90 px-3 py-2 backdrop-blur-md sm:gap-3 sm:px-5">
+        <header className="z-20 flex min-h-16 shrink-0 items-center gap-2 rounded-2xl shopzo-float-nav mx-3 mt-3 px-3 py-2 sm:gap-3 sm:mx-5 sm:mt-4 sm:px-4">
           <button
             type="button"
             className="rounded-full p-2 text-shop-muted transition hover:bg-neutral-100 hover:text-foreground dark:hover:bg-neutral-800 lg:hidden"
@@ -239,7 +239,7 @@ export default function AppShell({ children, menuItems, vendor, brandHref, onLog
           </button>
         </header>
 
-        <main className="min-h-0 flex-1 overflow-y-auto bg-shop-surface">
+        <main className="min-h-0 flex-1 overflow-y-auto">
           <div className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8">{children}</div>
         </main>
       </div>

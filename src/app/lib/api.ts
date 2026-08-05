@@ -46,4 +46,7 @@ export const API_ENDPOINTS = {
     GET_TRANSFER_ISSUES: `${API_BASE_URL}/inventoryTransfer/issues`,
     GET_TRANSFER_ISSUE_RESOLUTION_RULES: `${API_BASE_URL}/inventoryTransfer/issue-resolution-rules`,
     UPDATE_TRANSFER_ISSUE_STATUS: `${API_BASE_URL}/inventoryTransfer/issues/status`,
+
+    GET_FULFILLMENTS: `${API_BASE_URL}/fulfillment/list`,
+    UPDATE_FULFILLMENT_STATUS: `${API_BASE_URL}/fulfillment`,
 };
