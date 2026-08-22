@@ -1,14 +1,21 @@
 "use client";
 
+import axios from "axios";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { API_ENDPOINTS } from "@/app/lib/api";
 import { vendorCard, vendorPageHeader, vendorSubtitle, vendorTitle } from "@/lib/vendor-ui";
+import { RootState } from "@/store";
 
-const STATS = [
-  { name: "Total Products", value: "0", icon: "🛍️", href: "/products", iconWrap: "bg-sky-100 dark:bg-sky-500/20" },
-  { name: "Active Orders", value: "0", icon: "📦", href: "/orders", iconWrap: "bg-amber-100 dark:bg-amber-500/20" },
-  { name: "Revenue Today", value: "₹0", icon: "💰", href: "/orders", iconWrap: "bg-emerald-100 dark:bg-emerald-500/20" },
-  { name: "Stock Items", value: "—", icon: "🏭", href: "/inventory", iconWrap: "bg-violet-100 dark:bg-violet-500/20" },
-];
+type DashboardStats = {
+  openCount?: number;
+  deliveredToday?: number;
+  revenueToday?: number;
+  inventorySkus?: number;
+  totalProducts?: number;
+  recent?: { _id: string; status: string; createdAt?: string }[];
+};
 
 const QUICK_ACTIONS = [
   { name: "Manage Products", href: "/products", icon: "🛍️" },
@@ -20,6 +27,56 @@ const QUICK_ACTIONS = [
 ];
 
 export default function VendorDashboardPage() {
+  const vendor = useSelector((state: RootState) => state.auth.vendor);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+
+  useEffect(() => {
+    if (!vendor?._id) return;
+    let cancelled = false;
+    axios
+      .get(API_ENDPOINTS.GET_FULFILLMENT_STATS, { withCredentials: true })
+      .then((res) => {
+        if (!cancelled && res.data?.success) setStats(res.data.data || {});
+      })
+      .catch(() => {
+        if (!cancelled) setStats({});
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [vendor?._id]);
+
+  const cards = [
+    {
+      name: "Total Products",
+      value: String(stats?.totalProducts ?? "—"),
+      icon: "🛍️",
+      href: "/products",
+      iconWrap: "bg-sky-100 dark:bg-sky-500/20",
+    },
+    {
+      name: "Active Orders",
+      value: String(stats?.openCount ?? "—"),
+      icon: "📦",
+      href: "/orders",
+      iconWrap: "bg-amber-100 dark:bg-amber-500/20",
+    },
+    {
+      name: "Revenue Today",
+      value: `₹${Number(stats?.revenueToday || 0).toLocaleString()}`,
+      icon: "💰",
+      href: "/orders",
+      iconWrap: "bg-emerald-100 dark:bg-emerald-500/20",
+    },
+    {
+      name: "Stock Items",
+      value: String(stats?.inventorySkus ?? "—"),
+      icon: "🏭",
+      href: "/inventory",
+      iconWrap: "bg-violet-100 dark:bg-violet-500/20",
+    },
+  ];
+
   return (
     <div className="space-y-6 sm:space-y-7">
       <div className={vendorPageHeader}>
@@ -32,7 +89,7 @@ export default function VendorDashboardPage() {
       <div>
         <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.15em] text-shop-muted">Key metrics</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {STATS.map((stat) => (
+          {cards.map((stat) => (
             <Link
               key={stat.name}
               href={stat.href}
@@ -75,10 +132,24 @@ export default function VendorDashboardPage() {
 
       <div className={`${vendorCard} p-5 sm:p-6`}>
         <h2 className="text-xl font-semibold tracking-tight text-foreground">Recent orders</h2>
-        <p className="mb-4 mt-1 text-sm text-shop-muted">Latest order activity</p>
-        <div className="rounded-xl border border-dashed border-shop-border py-14 text-center">
-          <p className="text-sm font-medium text-shop-muted">No recent orders to display</p>
-        </div>
+        <p className="mb-4 mt-1 text-sm text-shop-muted">Latest fulfillment activity</p>
+        {!stats?.recent?.length ? (
+          <div className="rounded-xl border border-dashed border-shop-border py-14 text-center">
+            <p className="text-sm font-medium text-shop-muted">No recent orders to display</p>
+          </div>
+        ) : (
+          <ul className="space-y-2">
+            {stats.recent.map((row) => (
+              <li
+                key={row._id}
+                className="flex items-center justify-between rounded-xl border border-shop-border px-4 py-3 text-sm"
+              >
+                <span className="font-medium text-foreground">#{String(row._id).slice(-8).toUpperCase()}</span>
+                <span className="capitalize text-shop-muted">{row.status}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
