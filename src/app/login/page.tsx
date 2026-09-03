@@ -24,6 +24,8 @@ const modules = [
   { name: "Transfers", value: "Inbound & outbound", tone: "bg-amber-500" },
 ];
 
+type LoginMode = "mobile" | "email";
+
 const LoginPage = () => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -31,17 +33,13 @@ const LoginPage = () => {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [loginMode, setLoginMode] = useState<LoginMode>("mobile");
+  const [formData, setFormData] = useState({ email: "", contactNumber: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (vendor) router.push("/Dashboard");
   }, [vendor, router]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError("");
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +47,12 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post(API_ENDPOINTS.LOGIN, formData, { withCredentials: true });
+      const payload =
+        loginMode === "mobile"
+          ? { contactNumber: formData.contactNumber, password: formData.password }
+          : { email: formData.email, password: formData.password };
+
+      const res = await axios.post(API_ENDPOINTS.LOGIN, payload, { withCredentials: true });
 
       if (!res.data.success) {
         setError(res.data.message || "Login failed");
@@ -132,30 +135,77 @@ const LoginPage = () => {
                   Sign in to Shopzo
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-zinc-400">
-                  Vendor email and password
+                  Mobile or email with password
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="mt-7 space-y-4" noValidate>
-                <div>
-                  <label
-                    htmlFor="login-email"
-                    className="mb-1.5 block text-sm font-semibold text-slate-800 dark:text-zinc-200"
+              <div className="mt-6 inline-flex w-full rounded-full border border-shop-border bg-shop-surface p-1">
+                {(["mobile", "email"] as LoginMode[]).map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => {
+                      setLoginMode(mode);
+                      setError("");
+                    }}
+                    className={`flex-1 rounded-full py-2 text-sm font-medium transition ${
+                      loginMode === mode
+                        ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900"
+                        : "text-shop-muted hover:text-foreground"
+                    }`}
                   >
-                    Email address
-                  </label>
-                  <input
-                    id="login-email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="you@vendor.com"
-                    className={inputClass}
-                  />
-                </div>
+                    {mode === "mobile" ? "Mobile" : "Email"}
+                  </button>
+                ))}
+              </div>
+
+              <form onSubmit={handleSubmit} className="mt-7 space-y-4" noValidate>
+                {loginMode === "mobile" ? (
+                  <div>
+                    <label
+                      htmlFor="login-mobile"
+                      className="mb-1.5 block text-sm font-semibold text-slate-800 dark:text-zinc-200"
+                    >
+                      Contact number
+                    </label>
+                    <input
+                      id="login-mobile"
+                      name="contactNumber"
+                      type="text"
+                      required
+                      value={formData.contactNumber}
+                      onChange={(e) => {
+                        setFormData((prev) => ({ ...prev, contactNumber: e.target.value }));
+                        setError("");
+                      }}
+                      className={inputClass}
+                      placeholder="+91…"
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <label
+                      htmlFor="login-email"
+                      className="mb-1.5 block text-sm font-semibold text-slate-800 dark:text-zinc-200"
+                    >
+                      Email address
+                    </label>
+                    <input
+                      id="login-email"
+                      name="email"
+                      type="email"
+                      autoComplete="email"
+                      required
+                      value={formData.email}
+                      onChange={(e) => {
+                        setFormData((prev) => ({ ...prev, email: e.target.value }));
+                        setError("");
+                      }}
+                      placeholder="you@vendor.com"
+                      className={inputClass}
+                    />
+                  </div>
+                )}
 
                 <div>
                   <label
@@ -172,7 +222,10 @@ const LoginPage = () => {
                       autoComplete="current-password"
                       required
                       value={formData.password}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        setFormData((prev) => ({ ...prev, password: e.target.value }));
+                        setError("");
+                      }}
                       placeholder="Enter your password"
                       className={`${inputClass} pr-12`}
                     />
@@ -218,7 +271,10 @@ const LoginPage = () => {
             </div>
 
             <p className="mt-6 text-center text-sm text-slate-600 dark:text-zinc-400">
-              Authorized vendor access only.
+              New vendor?{" "}
+              <Link href="/register" className="font-semibold text-slate-950 dark:text-white">
+                Register and wait for approval
+              </Link>
             </p>
           </div>
         </section>

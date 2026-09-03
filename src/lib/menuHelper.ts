@@ -6,5 +6,5 @@ export const VENDOR_MENU_ITEMS = [
   { label: "Transfer Issues", href: "/TransferIssues" },
   { label: "Orders", href: "/orders" },
   { label: "Team", href: "/Team" },
-  { label: "History", href: "/History" },
+  { label: "Order history", href: "/History" },
 ];

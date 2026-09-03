@@ -7,6 +7,7 @@ const VENDOR_PRODUCT = `${API_BASE_URL}/vendor/product`;
 
 export const API_ENDPOINTS = {
     LOGIN: `${API_BASE_URL}/vendor/login`,
+    REGISTER: `${API_BASE_URL}/vendor/register`,
     LOGOUT: `${API_BASE_URL}/vendor/logout`,
 
     CURRENT_USER: `${API_BASE_URL}/vendor/me`,
@@ -48,6 +49,7 @@ export const API_ENDPOINTS = {
     UPDATE_TRANSFER_ISSUE_STATUS: `${API_BASE_URL}/inventoryTransfer/issues/status`,
 
     GET_FULFILLMENTS: `${API_BASE_URL}/fulfillment/list`,
+    GET_FULFILLMENT_BY_ID: `${API_BASE_URL}/fulfillment`,
     GET_FULFILLMENT_STATS: `${API_BASE_URL}/fulfillment/stats`,
     UPDATE_FULFILLMENT_STATUS: `${API_BASE_URL}/fulfillment`,
 };
