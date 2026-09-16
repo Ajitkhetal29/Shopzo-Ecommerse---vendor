@@ -11,6 +11,7 @@ export const API_ENDPOINTS = {
     LOGOUT: `${API_BASE_URL}/vendor/logout`,
 
     CURRENT_USER: `${API_BASE_URL}/vendor/me`,
+    UPDATE_PROFILE: `${API_BASE_URL}/vendor/profile`,
 
     GET_CATEGORIES: `${API_BASE_URL}/category/list`,
     GET_SUBCATEGORIES: `${API_BASE_URL}/subcategory/list`,

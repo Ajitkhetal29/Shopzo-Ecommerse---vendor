@@ -216,6 +216,13 @@ export default function AppShell({ children, menuItems, vendor, brandHref, onLog
                     <p className="truncate text-xs text-shop-muted">{vendor.email}</p>
                   ) : null}
                 </div>
+                <Link
+                  href="/profile"
+                  onClick={() => setProfileOpen(false)}
+                  className="mt-1 flex w-full items-center rounded-lg px-3 py-2 text-left text-sm text-foreground transition hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                >
+                  Profile
+                </Link>
                 <button
                   type="button"
                   onClick={() => {
@@ -258,6 +265,7 @@ function NavIcon({ href, label, active }: { href: string; label: string; active:
   if (href.includes("/orders")) return <IconClipboard className={c} />;
   if (lower.includes("team")) return <IconUsers className={c} />;
   if (lower.includes("history")) return <IconChart className={c} />;
+  if (lower.includes("profile")) return <IconUsers className={c} />;
   return <IconCircle className={c} />;
 }
 
