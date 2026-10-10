@@ -10,11 +10,21 @@ import { RootState } from "@/store";
 
 type DashboardStats = {
   openCount?: number;
+  claimedCount?: number;
+  waitingCount?: number;
   deliveredToday?: number;
   revenueToday?: number;
   inventorySkus?: number;
   totalProducts?: number;
-  recent?: { _id: string; status: string; createdAt?: string }[];
+  recent?: {
+    _id: string;
+    status: string;
+    createdAt?: string;
+    delivery?: {
+      status?: string;
+      rider?: { name?: string | null; shopzoDeliveryId?: string | null } | null;
+    } | null;
+  }[];
 };
 
 const QUICK_ACTIONS = [
@@ -23,6 +33,7 @@ const QUICK_ACTIONS = [
   { name: "Transfer Stock", href: "/TransferInventory", icon: "↔️" },
   { name: "Transfer Issues", href: "/TransferIssues", icon: "⚠️" },
   { name: "View Orders", href: "/orders", icon: "📋" },
+  { name: "Deliveries", href: "/deliveries", icon: "🚚" },
   { name: "Sales History", href: "/History", icon: "📊" },
 ];
 
@@ -62,6 +73,13 @@ export default function VendorDashboardPage() {
       iconWrap: "bg-amber-100 dark:bg-amber-500/20",
     },
     {
+      name: "Rider claimed",
+      value: String(stats?.claimedCount ?? "—"),
+      icon: "🚚",
+      href: "/deliveries",
+      iconWrap: "bg-lime-100 dark:bg-lime-500/20",
+    },
+    {
       name: "Revenue Today",
       value: `₹${Number(stats?.revenueToday || 0).toLocaleString()}`,
       icon: "💰",
@@ -88,7 +106,7 @@ export default function VendorDashboardPage() {
 
       <div>
         <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.15em] text-shop-muted">Key metrics</h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {cards.map((stat) => (
             <Link
               key={stat.name}
@@ -131,23 +149,45 @@ export default function VendorDashboardPage() {
       </div>
 
       <div className={`${vendorCard} p-5 sm:p-6`}>
-        <h2 className="text-xl font-semibold tracking-tight text-foreground">Recent orders</h2>
-        <p className="mb-4 mt-1 text-sm text-shop-muted">Latest fulfillment activity</p>
+        <h2 className="text-xl font-semibold tracking-tight text-foreground">Recent deliveries</h2>
+        <p className="mb-4 mt-1 text-sm text-shop-muted">
+          Latest rider activity · {stats?.waitingCount ?? 0} still waiting
+        </p>
         {!stats?.recent?.length ? (
           <div className="rounded-xl border border-dashed border-shop-border py-14 text-center">
-            <p className="text-sm font-medium text-shop-muted">No recent orders to display</p>
+            <p className="text-sm font-medium text-shop-muted">No packed jobs yet</p>
           </div>
         ) : (
           <ul className="space-y-2">
-            {stats.recent.map((row) => (
-              <li
-                key={row._id}
-                className="flex items-center justify-between rounded-xl border border-shop-border px-4 py-3 text-sm"
-              >
-                <span className="font-medium text-foreground">#{String(row._id).slice(-8).toUpperCase()}</span>
-                <span className="capitalize text-shop-muted">{row.status}</span>
-              </li>
-            ))}
+            {stats.recent.map((row) => {
+              const rider = row.delivery?.rider;
+              const job =
+                row.delivery?.status === "in_transit"
+                  ? "To customer"
+                  : row.delivery?.status === "at_pickup"
+                    ? "At pickup"
+                    : row.delivery?.status === "initiated"
+                      ? "Started"
+                      : row.delivery?.status === "in_queue"
+                        ? "Rider accepted"
+                        : "Waiting for rider";
+              return (
+                <li
+                  key={row._id}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-shop-border px-4 py-3 text-sm"
+                >
+                  <div className="min-w-0">
+                    <p className="font-medium text-foreground">#{String(row._id).slice(-8).toUpperCase()}</p>
+                    <p className="truncate text-xs text-shop-muted">
+                      {rider
+                        ? `${rider.name || "Rider"}${rider.shopzoDeliveryId ? ` · ${rider.shopzoDeliveryId}` : ""}`
+                        : job}
+                    </p>
+                  </div>
+                  <span className="shrink-0 capitalize text-shop-muted">{job}</span>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>

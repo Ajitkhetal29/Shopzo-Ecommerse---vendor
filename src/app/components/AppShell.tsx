@@ -262,7 +262,7 @@ function NavIcon({ href, label, active }: { href: string; label: string; active:
   if (href.includes("/inventory") && !href.includes("Transfer")) return <IconWarehouse className={c} />;
   if (href.includes("TransferInventory")) return <IconArrows className={c} />;
   if (href.includes("TransferIssues")) return <IconAlert className={c} />;
-  if (href.includes("/orders")) return <IconClipboard className={c} />;
+  if (href.includes("/orders") || href.includes("/deliveries")) return <IconClipboard className={c} />;
   if (lower.includes("team")) return <IconUsers className={c} />;
   if (lower.includes("history")) return <IconChart className={c} />;
   if (lower.includes("profile")) return <IconUsers className={c} />;

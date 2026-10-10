@@ -1,10 +1,13 @@
 "use client";
 
+import axios from "axios";
 import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ThemeProvider } from "@/app/components/theme-provider";
 import { store } from "@/store";
+
+axios.defaults.headers.common["X-Shopzo-Panel"] = "vendor";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (

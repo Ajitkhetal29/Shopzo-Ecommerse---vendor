@@ -17,12 +17,23 @@ type FulfillmentStatus =
   | "delivered"
   | "cancelled";
 
+export type HubDelivery = {
+  jobId: string;
+  status: string;
+  rider?: {
+    name?: string | null;
+    contact?: string | null;
+    shopzoDeliveryId?: string | null;
+  } | null;
+};
+
 type Fulfillment = {
   _id: string;
   status: FulfillmentStatus;
   distanceKm?: number | null;
   expectedDeliveryDate?: string | null;
   createdAt?: string;
+  delivery?: HubDelivery | null;
   items: {
     quantity: number;
     variant?: {
@@ -48,7 +59,7 @@ const NEXT_STATUSES: Record<FulfillmentStatus, FulfillmentStatus[]> = {
   assigned: ["accepted", "cancelled"],
   accepted: ["packed", "cancelled"],
   packed: ["shipped"],
-  shipped: ["delivered"],
+  shipped: [],
   delivered: [],
   cancelled: [],
 };
@@ -80,6 +91,53 @@ export const badgeClass = (status: string) => {
   }
 };
 
+export function DeliveryStamp({
+  status,
+  delivery,
+}: {
+  status: string;
+  delivery?: HubDelivery | null;
+}) {
+  if (!["packed", "shipped", "delivered"].includes(status) && !delivery) return null;
+
+  const rider = delivery?.rider;
+  const jobLabel =
+    delivery?.status === "in_transit"
+      ? "Heading to customer"
+      : delivery?.status === "at_pickup"
+      ? "Rider at pickup — you can ship"
+      : delivery?.status === "initiated"
+      ? "Rider started — en route to you"
+      : delivery?.status === "in_queue"
+        ? "Rider accepted"
+        : delivery?.status === "available"
+          ? "Waiting for a rider"
+          : delivery?.status === "completed"
+            ? "Delivered by rider"
+            : delivery?.status === "failed"
+              ? "Rider marked failed"
+              : status === "packed"
+                ? "Waiting for a rider"
+                : null;
+
+  return (
+    <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm dark:border-emerald-900/50 dark:bg-emerald-950/30">
+      <p className="text-emerald-800 dark:text-emerald-200">{jobLabel || "Delivery"}</p>
+      {rider ? (
+        <>
+          <p className="mt-1 font-semibold text-gray-900 dark:text-slate-100">
+            {rider.name || "Rider"}
+            {rider.shopzoDeliveryId ? ` · ${rider.shopzoDeliveryId}` : ""}
+          </p>
+          {rider.contact ? <p className="text-gray-700 dark:text-gray-300">{rider.contact}</p> : null}
+        </>
+      ) : (
+        <p className="mt-1 text-gray-700 dark:text-gray-300">No rider yet. Job is on the offer board.</p>
+      )}
+    </div>
+  );
+}
+
 export const formatDate = (date?: string | null) => {
   if (!date) return "-";
   const parsed = new Date(date);
@@ -101,7 +159,7 @@ export default function HubFulfillmentList({
   title,
   subtitle,
 }: {
-  scope: "open" | "history";
+  scope: "open" | "history" | "dispatch";
   title: string;
   subtitle: string;
 }) {
@@ -115,7 +173,12 @@ export default function HubFulfillmentList({
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
-  const tabs = scope === "history" ? ["all", "delivered", "cancelled"] : ["all", "assigned", "accepted", "packed", "shipped"];
+  const tabs =
+    scope === "history"
+      ? ["all", "delivered", "cancelled"]
+      : scope === "dispatch"
+        ? ["all", "packed", "shipped"]
+        : ["all", "assigned", "accepted", "packed", "shipped"];
 
   useEffect(() => setPage(1), [vendor?._id, tab, scope]);
 
@@ -248,6 +311,9 @@ export default function HubFulfillmentList({
                   <p className="text-gray-500">ETA</p>
                   <p className="font-semibold text-gray-900 dark:text-slate-100">{formatDate(f.expectedDeliveryDate)}</p>
                 </div>
+                <div className="md:col-span-3">
+                  <DeliveryStamp status={f.status} delivery={f.delivery} />
+                </div>
               </div>
 
               <div className="mt-4 space-y-2">
@@ -283,12 +349,14 @@ export default function HubFulfillmentList({
                 >
                   View details
                 </Link>
-                {scope === "open" &&
-                  NEXT_STATUSES[f.status].map((status) => (
+                {(scope === "open" || scope === "dispatch") &&
+                  NEXT_STATUSES[f.status].map((status) => {
+                    const blockedShip = status === "shipped" && f.delivery?.status !== "at_pickup";
+                    return (
                     <button
                       key={status}
                       type="button"
-                      disabled={updatingId === f._id}
+                      disabled={updatingId === f._id || blockedShip}
                       onClick={() => updateStatus(f._id, status)}
                       className={`rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50 ${
                         status === "cancelled"
@@ -296,9 +364,14 @@ export default function HubFulfillmentList({
                           : "bg-black text-white dark:bg-white dark:text-black"
                       }`}
                     >
-                      {updatingId === f._id ? "Updating..." : ACTION_LABEL[status]}
+                      {updatingId === f._id
+                        ? "Updating..."
+                        : blockedShip
+                          ? "Waiting for rider at pickup"
+                          : ACTION_LABEL[status]}
                     </button>
-                  ))}
+                    );
+                  })}
               </div>
             </div>
           ))}

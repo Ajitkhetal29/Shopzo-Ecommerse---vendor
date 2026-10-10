@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { API_ENDPOINTS } from "@/app/lib/api";
-import { badgeClass, formatDate } from "../HubFulfillmentList";
+import { badgeClass, DeliveryStamp, formatDate, type HubDelivery } from "../HubFulfillmentList";
 
 type FulfillmentStatus =
   | "assigned"
@@ -22,7 +22,7 @@ const NEXT_STATUSES: Record<FulfillmentStatus, FulfillmentStatus[]> = {
   assigned: ["accepted", "cancelled"],
   accepted: ["packed", "cancelled"],
   packed: ["shipped"],
-  shipped: ["delivered"],
+  shipped: [],
   delivered: [],
   cancelled: [],
 };
@@ -61,6 +61,7 @@ type Detail = {
     deliveryContact?: { name?: string; phone?: string };
     createdAt?: string;
   } | null;
+  delivery?: HubDelivery | null;
 };
 
 export default function VendorOrderDetailPage() {
@@ -166,6 +167,8 @@ export default function VendorOrderDetailPage() {
             <p className="mt-3 text-sm">ETA {formatDate(fulfillment.expectedDeliveryDate)}</p>
           </div>
 
+          <DeliveryStamp status={fulfillment.status} delivery={fulfillment.delivery} />
+
           <div className="rounded-xl border border-gray-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
             <p className="font-medium text-gray-900 dark:text-white">Timeline</p>
             <ol className="mt-4 space-y-2">
@@ -214,11 +217,14 @@ export default function VendorOrderDetailPage() {
 
           {NEXT_STATUSES[fulfillment.status].length > 0 && (
             <div className="flex flex-wrap justify-end gap-2">
-              {NEXT_STATUSES[fulfillment.status].map((status) => (
+              {NEXT_STATUSES[fulfillment.status].map((status) => {
+                const blockedShip =
+                  status === "shipped" && fulfillment.delivery?.status !== "at_pickup";
+                return (
                 <button
                   key={status}
                   type="button"
-                  disabled={updating}
+                  disabled={updating || blockedShip}
                   onClick={() => updateStatus(status)}
                   className={`rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50 ${
                     status === "cancelled"
@@ -226,9 +232,14 @@ export default function VendorOrderDetailPage() {
                       : "bg-black text-white dark:bg-white dark:text-black"
                   }`}
                 >
-                  {updating ? "Updating..." : ACTION_LABEL[status]}
+                  {updating
+                    ? "Updating..."
+                    : blockedShip
+                      ? "Waiting for rider at pickup"
+                      : ACTION_LABEL[status]}
                 </button>
-              ))}
+                );
+              })}
             </div>
           )}
         </>
