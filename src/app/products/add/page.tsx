@@ -23,6 +23,7 @@ export default function AddProductPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [generatingDescription, setGeneratingDescription] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -68,6 +69,40 @@ export default function AddProductPage() {
   };
 
   const handleRemoveImage = (index: number) => setImages((prev) => prev.filter((_, i) => i !== index));
+
+  const handleGenerateProductDescription = async () => {
+    const name = formData.name.trim();
+    const categoryName = categories.find((cat) => cat._id === formData.category)?.name;
+    const subcategoryName = subcategories.find((sub) => sub._id === formData.subcategory)?.name;
+
+    if (!name || !categoryName) {
+      toast.error("Enter a product name and select a category first");
+      return;
+    }
+
+    setGeneratingDescription(true);
+    try {
+      const response = await axios.post(
+        API_ENDPOINTS.GENERATE_PRODUCT_DESCRIPTION,
+        {
+          name,
+          category: categoryName,
+          subcategory: subcategoryName || undefined,
+        },
+        { withCredentials: true },
+      );
+      if (response.data.success) {
+        setFormData((prev) => ({ ...prev, description: response.data.data }));
+      } else {
+        toast.error(response.data.message || "Failed to generate product description");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to generate product description");
+    } finally {
+      setGeneratingDescription(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -139,18 +174,6 @@ export default function AddProductPage() {
               <input type="text" id="slug" value={formData.slug} readOnly disabled className="w-full px-4 py-2.5 rounded-lg border bg-gray-100 dark:bg-slate-700 text-sm" />
             </div>
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description *</label>
-              <textarea
-                id="description"
-                name="description"
-                rows={4}
-                required
-                value={formData.description}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white text-sm resize-none"
-              />
-            </div>
-            <div>
               <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category *</label>
               <select id="category" name="category" required value={formData.category} onChange={handleChange} className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white text-sm">
                 <option value="">Select category</option>
@@ -163,6 +186,26 @@ export default function AddProductPage() {
                 <option value="">Select subcategory</option>
                 {subcategories.map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
               </select>
+            </div>
+            <div>
+              <button
+                type="button"
+                onClick={handleGenerateProductDescription}
+                disabled={generatingDescription}
+                className="mb-3 w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:border-slate-600 dark:bg-slate-700 dark:text-white disabled:opacity-50"
+              >
+                {generatingDescription ? "Generating..." : "Generate Description"}
+              </button>
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description *</label>
+              <textarea
+                id="description"
+                name="description"
+                rows={4}
+                required
+                value={formData.description}
+                onChange={handleChange}
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white text-sm resize-none"
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Images (max {MAX_IMAGES})</label>

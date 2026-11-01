@@ -24,6 +24,7 @@ export default function EditProductPage() {
 
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [generatingDescription, setGeneratingDescription] = useState(false);
   const [error, setError] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
@@ -91,6 +92,40 @@ export default function EditProductPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleGenerateProductDescription = async () => {
+    const name = formData.name.trim();
+    const categoryName = categories.find((cat) => cat._id === formData.category)?.name;
+    const subcategoryName = subcategories.find((sub) => sub._id === formData.subcategory)?.name;
+
+    if (!name || !categoryName) {
+      toast.error("Enter a product name and select a category first");
+      return;
+    }
+
+    setGeneratingDescription(true);
+    try {
+      const response = await axios.post(
+        API_ENDPOINTS.GENERATE_PRODUCT_DESCRIPTION,
+        {
+          name,
+          category: categoryName,
+          subcategory: subcategoryName || undefined,
+        },
+        { withCredentials: true },
+      );
+      if (response.data.success) {
+        setFormData((prev) => ({ ...prev, description: response.data.data }));
+      } else {
+        toast.error(response.data.message || "Failed to generate product description");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to generate product description");
+    } finally {
+      setGeneratingDescription(false);
+    }
   };
 
   const keptExistingCount = existingImages.length - removedExistingIndices.size;
@@ -189,10 +224,6 @@ export default function EditProductPage() {
               <input type="text" value={formData.slug} readOnly className="w-full px-4 py-2.5 rounded-lg border bg-gray-100 dark:bg-slate-700 text-sm" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
-              <textarea name="description" rows={4} value={formData.description} onChange={handleChange} className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm resize-none" />
-            </div>
-            <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category *</label>
               <select name="category" required value={formData.category} onChange={handleChange} className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm">
                 <option value="">Select category</option>
@@ -205,6 +236,18 @@ export default function EditProductPage() {
                 <option value="">Select subcategory</option>
                 {subcategories.map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
               </select>
+            </div>
+            <div>
+              <button
+                type="button"
+                onClick={handleGenerateProductDescription}
+                disabled={generatingDescription}
+                className="mb-3 w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:border-slate-600 dark:bg-slate-700 dark:text-white disabled:opacity-50"
+              >
+                {generatingDescription ? "Generating..." : "Generate Description"}
+              </button>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
+              <textarea name="description" rows={4} value={formData.description} onChange={handleChange} className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm resize-none" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Images ({totalImageCount}/{MAX_IMAGES})</label>

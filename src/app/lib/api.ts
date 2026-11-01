@@ -15,6 +15,7 @@ export const API_ENDPOINTS = {
 
     GET_CATEGORIES: `${API_BASE_URL}/category/list`,
     GET_SUBCATEGORIES: `${API_BASE_URL}/subcategory/list`,
+    GENERATE_PRODUCT_DESCRIPTION: `${API_BASE_URL}/google-api-studio/generate-product-description`,
     GET_PRODUCTS: `${VENDOR_PRODUCT}/list`,
     GET_PRODUCT_BY_ID: `${VENDOR_PRODUCT}`,
     CREATE_PRODUCT: `${VENDOR_PRODUCT}/add`,
