@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Vendor } from "@/store/slices/authSlice";
 import ThemeToggle from "@/app/components/ThemeToggle";
+import NotificationBell from "@/app/components/notifications/NotificationBell";
 import { publicUrl } from "@/lib/basePath";
 
 const SIDEBAR_KEY = "shopzo-vendor-sidebar-collapsed";
@@ -195,6 +196,7 @@ export default function AppShell({ children, menuItems, vendor, brandHref, onLog
             </label>
           </div>
 
+          <NotificationBell />
           <ThemeToggle />
 
           <div ref={profileRef} className="relative hidden sm:block">
@@ -265,6 +267,7 @@ function NavIcon({ href, label, active }: { href: string; label: string; active:
   if (href.includes("/orders") || href.includes("/deliveries")) return <IconClipboard className={c} />;
   if (lower.includes("team")) return <IconUsers className={c} />;
   if (lower.includes("history")) return <IconChart className={c} />;
+  if (lower.includes("notification")) return <IconAlert className={c} />;
   if (lower.includes("profile")) return <IconUsers className={c} />;
   return <IconCircle className={c} />;
 }

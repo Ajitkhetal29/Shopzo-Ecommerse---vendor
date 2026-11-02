@@ -54,4 +54,5 @@ export const API_ENDPOINTS = {
     GET_FULFILLMENT_BY_ID: `${API_BASE_URL}/fulfillment`,
     GET_FULFILLMENT_STATS: `${API_BASE_URL}/fulfillment/stats`,
     UPDATE_FULFILLMENT_STATUS: `${API_BASE_URL}/fulfillment`,
+    NOTIFICATIONS: `${API_BASE_URL}/notifications`,
 };

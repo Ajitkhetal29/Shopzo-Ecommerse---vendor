@@ -1,5 +1,6 @@
 export const VENDOR_MENU_ITEMS = [
   { label: "Dashboard", href: "/Dashboard" },
+  { label: "Notifications", href: "/notifications" },
   { label: "Products", href: "/products" },
   { label: "Inventory", href: "/inventory" },
   { label: "Transfer Inventory", href: "/TransferInventory" },
